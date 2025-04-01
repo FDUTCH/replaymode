@@ -100,7 +100,10 @@ func (writer *Writer) WritePacket(pk packet.Packet) error {
 }
 
 func (writer *Writer) WriteGameData(data minecraft.GameData) error {
-	return writer.WritePacket(writer.t.ParseGameData(data))
+	for _, pk := range writer.t.ParseGameData(data) {
+		writer.WritePacket(pk)
+	}
+	return nil
 }
 
 func (writer *Writer) Translator() *translator.Translator {

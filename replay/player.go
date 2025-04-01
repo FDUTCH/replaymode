@@ -23,10 +23,6 @@ func (player *Player) Play() {
 
 	defer player.reader.Close()
 
-	conn := player.conn
-
-	var addPacket *packet.AddPlayer
-
 	for {
 		p, ok := player.readPacket()
 		if !ok {
@@ -34,21 +30,12 @@ func (player *Player) Play() {
 		}
 
 		switch pk := p.(type) {
+
 		case *packet.StartGame:
 			player.gameData = translator.GameDataFromPacket(pk)
-			viewerData := translator.GameDataForViewer(player.gameData)
-			err := conn.StartGame(viewerData)
-			if err != nil {
-				player.disconnectErr(err)
-				return
-			}
-
-			player.sendAbilities()
-			addPacket = translator.TranslateGameData(player.gameData, conn.IdentityData().DisplayName)
-			if !player.writePacket(addPacket) {
-				return
-			}
-
+		case *packet.ItemRegistry:
+			player.gameData.Items = pk.Items
+			player.start()
 		case *packet.MovePlayer:
 			if pk.EntityRuntimeID == player.gameData.EntityRuntimeID {
 				time.AfterFunc(time.Second/20, func() {
@@ -63,6 +50,22 @@ func (player *Player) Play() {
 			}
 		}
 
+	}
+}
+
+func (player *Player) start() {
+
+	viewerData := translator.GameDataForViewer(player.gameData)
+	err := player.conn.StartGame(viewerData)
+	if err != nil {
+		player.disconnectErr(err)
+		return
+	}
+
+	player.sendAbilities()
+	addPacket := translator.TranslateGameData(player.gameData, player.conn.IdentityData().DisplayName)
+	if !player.writePacket(addPacket) {
+		return
 	}
 }
 
