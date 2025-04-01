@@ -32,8 +32,6 @@ func (t *Translator) Translate(p packet.Packet) []packet.Packet {
 		return t.TranslateInventoryContent(pk)
 	case *packet.MovePlayer:
 		return t.TranslateMovePlayer(pk)
-	case *packet.SetActorData:
-
 	case *packet.ContainerSetData, *packet.BlockPickRequest, *packet.BookEdit, *packet.ClientCacheBlobStatus,
 		*packet.CommandRequest, *packet.ContainerClose, *packet.ContainerOpen, *packet.Interact,
 		*packet.ItemStackRequest, *packet.ItemStackResponse, *packet.LecternUpdate, *packet.ModalFormResponse,

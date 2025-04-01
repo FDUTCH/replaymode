@@ -6,7 +6,7 @@ import (
 )
 
 func TranslatePlayerAuthInput(pk *packet.PlayerAuthInput, rid uint64) *packet.MoveActorAbsolute {
-	pk.Position[1] -= 1.62001
+	//pk.Position[1] -= 1.62001
 
 	y := pk.Position.Y()
 
